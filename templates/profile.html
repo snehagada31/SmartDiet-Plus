@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="{{ g.lang_code }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ g.translate('Your Profile - SmartDiet+') }}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+     
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* === BASE STYLES (EXISTING) === */
+        body { background-color: #f4f6f9; font-family: 'Roboto', sans-serif; color: #333; line-height: 1.6; margin: 0; padding: 0; }
+        header { background-color: #00796B; color: white; padding: 15px 40px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+        h1 { font-family: 'Poppins', sans-serif; margin: 0; font-size: 1.8em; }
+        h2, h3 { font-family: 'Poppins', sans-serif; color: #00796B; border-bottom: 2px solid #e0eeef; padding-bottom: 8px; margin-top: 10px; }
+        .main-content { max-width: 1300px; margin: 30px auto; padding: 30px; background-color: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); display: flex; gap: 30px; }
+        .profile-form-area { flex: 3; padding-right: 30px; }
+        .data-summary-area { flex: 1.5; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px; }
+        .input-group { margin-bottom: 5px; }
+        label { display: block; font-weight: 500; margin-bottom: 4px; color: #555; font-size: 0.95em; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 15px; font-family: 'Roboto', sans-serif; }
+        .btn-submit { background-color: #4CAF50; color: white; }
+        .btn-personalized { background-color: #00796B; color: white; }
+        .log-prompt { font-size: 1em; font-weight: 500; color: #e65100; margin-bottom: 15px; }
+        .btn-log-meal { background-color: #00796B; color: white; width: 100%; padding: 10px; font-size: 1em; margin: 0; }
+        
+        /* === DATA SUMMARY BOXES (CLEAN BASE) === */
+        .data-summary-box {
+            background-color: #ffffff; 
+            border: 1px solid #c3e6cb; 
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-summary-box h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #004d40;
+            margin-top: 0;
+            font-size: 1.1em;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e0eeef;
+            margin-bottom: 10px;
+        }
+
+        /* === CALORIE BOX SPECIFICS (NO CHANGE) === */
+        .calorie-box { border: none; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); }
+        .stats-row { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .data-value-small { font-size: 1.8em; margin-bottom: 2px; }
+        .calorie-box .header-tabs { border-bottom: 2px solid #ddd; margin-bottom: 10px; }
+        
+        /* ======================================= */
+        /* ✨ COMPACT RIGHT COLUMN STYLES ✨       */
+        /* ======================================= */
+        
+        /* 1. PROGRESS, REMINDERS, AND HEALTH METRICS (TIGHTER SPACING) */
+        .progress-box, .reminder-box, .progress-log-form-box {
+            /* Reduce padding and line height */
+            padding: 10px 15px; 
+            line-height: 1.3;
+        }
+        
+        .progress-box h4, .reminder-box h4 {
+            /* Reduce space below header */
+            margin-bottom: 5px;
+            padding-bottom: 3px; 
+        }
+
+        /* Tighter spacing for Log Today's Health Metrics form fields */
+        .progress-log-form-box .input-grid {
+            gap: 5px; /* Reduce gap between weight/sleep fields */
+        }
+        .progress-log-form-box label {
+            margin-bottom: 2px;
+            font-size: 0.85em; /* Smaller label font */
+        }
+
+        /* Tighter spacing for progress and reminder lines */
+        .progress-info p, .reminder-info p {
+            margin: 3px 0; 
+            font-size: 0.9em;
+        }
+        .reminder-info .times {
+             margin: 0; /* Remove extra margin from set times */
+             font-size: 0.8em;
+             color: #777;
+        }
+        
+        /* 2. HISTORY BOX (COMPACT AND CLEAN) */
+        .history-box {
+            padding: 10px 15px; /* Reduced padding */
+            margin-top: 15px;
+        }
+        .history-item {
+            padding: 5px 0; /* Minimized vertical padding on list items */
+            font-size: 0.85em;
+        }
+        .meal-details {
+             font-size: 0.75em;
+             margin: 0;
+        }
+        
+        /* 3. VIEW DETAILS LINKS */
+        .view-details-link {
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        /* === IMAGE RECOGNITION BOX (LEFT SIDE - Keep neat look) === */
+        .image-upload-box {
+            border-top: 5px solid #ff9800; 
+            margin-top: 25px;
+            padding: 20px;
+        }
+        .image-upload-box h2 {
+            color: #ff9800; 
+            border-bottom-color: #ffcc80;
+        }
+
+        /* === END COMPACT STYLES === */
+        
+        /* Remaining utility styles */
+        .btn-delete { background-color: #D32F2F !important; color: white; padding: 4px 8px !important; font-size: 0.75em !important; margin-left: 10px; width: auto; }
+        .view-details-link { color: #00796B; text-decoration: none; }
+    </style>
+</head>
+<body>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flashes-container">
+            {% for category, message in messages %}
+            <div class="flash-message flash-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <header>
+        <h1>{{ g.translate('SmartDiet+') }}</h1>
+    </header>
+
+    <div class="main-content">
+        
+        <div class="profile-form-area">
+            {% if profile.get('password') %}
+                <p class="password-note">{{ g.translate('Password is set.') }} <a href="{{ url_for('login_bp.change_password') }}">{{ g.translate('Change Password') }}</a></p>
+                <hr class="form-separator" style="margin: 5px 0 20px 0;">
+            {% endif %}
+
+            <div class="input-grid" style="margin-bottom: 20px;">
+                <div class="input-group">
+                    <label for="name">{{ g.translate('Name') }}</label>
+                    <input type="text" id="name" name="name" 
+                            value="{{ profile.get('name', 'N/A') }}" readonly>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">{{ g.translate('Email') }}</label>
+                    <input type="email" id="email" name="email" 
+                            value="{{ profile.get('email', 'N/A') }}" readonly>
+                </div>
+            </div>
+            
+            <hr class="form-separator" style="margin: 5px 0 20px 0;">
+
+            <form action="/user/update_profile" method="POST">
+                
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="age">{{ g.translate('Age') }}</label>
+                        <input type="number" id="age" name="age" 
+                                value="{{ profile.get('age', '22') }}">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="gender">{{ g.translate('Gender') }}</label>
+                        <select id="gender" name="gender">
+                            <option value="Male" {% if profile.get('gender') == 'Male' %}selected{% endif %}>{{ g.translate('Male') }}</option>
+                            <option value="Female" {% if profile.get('gender') == 'Female' %}selected{% endif %}>{{ g.translate('Female') }}</option>
+                            <option value="Other" {% if profile.get('gender') == 'Other' %}selected{% endif %}>{{ g.translate('Other') }}</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="occupation">{{ g.translate('Occupation') }}</label>
+                        <input type="text" id="occupation" name="occupation" 
+                                value="{{ profile.get('occupation', 'Engineer') }}">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="city">{{ g.translate('City') }}</label>
+                        <input type="text" id="city" name="city" 
+                                value="{{ profile.get('city', 'Kalaburagi') }}">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="diet_preference">{{ g.translate('Diet Preference') }}</label>
+                        <select id="diet_preference" name="diet_preference">
+                            <option value="Vegetarian" {% if profile.get('diet_pref', 'Vegetarian') == 'Vegetarian' %}selected{% endif %}>{{ g.translate('Vegetarian') }}</option>
+                            <option value="Vegan" {% if profile.get('diet_pref') == 'Vegan' %}selected{% endif %}>{{ g.translate('Vegan') }}</option>
+                            <option value="Non-Vegetarian" {% if profile.get('diet_pref') == 'Non-Vegetarian' %}selected{% endif %}>{{ g.translate('Non-Vegetarian') }}</option>
+                            <option value="milk" {% if profile.get('diet_pref') == 'milk' %}selected{% endif %}>{{ g.translate('milk') }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group full-width">
+                    <label for="allergies">{{ g.translate('Allergies') }}</label>
+                    <textarea id="allergies" name="allergies" rows="3" placeholder="{{ g.translate('E.g., peanuts, dairy, gluten') }}">{{ profile.get('allergies', 'onion') }}</textarea>
+                </div>
+
+                <div class="input-group full-width">
+                    <label for="notes">{{ g.translate('Mindfulness Notes (How are u feeling today)') }}</label>
+                    <textarea id="notes" name="notes" rows="4" placeholder="{{ g.translate('Any mental or physical wellness notes...') }}">{{ profile.get('notes', 'oh oh i fallen in love') }}</textarea>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn-submit">{{ g.translate('Update Profile') }}</button>
+                    <button type="button" onclick="window.history.back()" class="btn-personalized">{{ g.translate('Go back') }}</button>
+                </div>
+            </form>
+            
+            <div class="data-summary-box image-upload-box" style="margin-bottom: 20px;">
+                <h2>{{ g.translate('Calorie Tracking by Image') }}</h2>
+                <p class="log-prompt">{{ g.translate('Upload a photo of your meal to get calorie estimates.') }}</p>
+                
+                <form id="imageUploadForm" action="{{ url_for('upload_food_image') }}" method="POST" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <label for="food_image">{{ g.translate('Choose Image') }}</label>
+                        <input type="file" id="food_image" name="food_image" accept="image/*" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-personalized" style="width: 100%; margin-top: 15px;">
+                        {{ g.translate('Analyze Meal Image') }}
+                    </button>
+                </form>
+                
+                <div id="imageAnalysisResult" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; display: none;">
+                </div>
+                <div style="width: 65%; margin: 20px auto; min-height: 200px;">
+                 <canvas id="macroPieChart"></canvas>
+                </div>
+            </div>
+            </div> <div class="data-summary-area">
+            <div class="data-summary-box progress-log-form-box">
+                <h4>{{ g.translate("Log Today's Health Metrics") }}</h4>
+                <form action="{{ url_for('login_bp.log_progress') }}" method="POST">
+                    <div class="input-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="input-group">
+                            <label for="weight">{{ g.translate('Weight (kg)') }}</label>
+                            <input type="number" step="0.1" id="weight" name="weight" placeholder="{{ g.translate('e.g., 74.5') }}">
+                        </div>
+                        <div class="input-group">
+                            <label for="sleep">{{ g.translate('Sleep (hours)') }}</label>
+                            <input type="number" step="0.1" id="sleep" name="sleep" placeholder="{{ g.translate('e.g., 7.0') }}">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit" style="width: 100%; margin-top: 5px; padding: 10px;">
+                        {{ g.translate('Log Progress') }}
+                    </button>
+                </form>
+            </div>
+            
+<div class="data-summary-box calorie-box">
+    <div class="header-tabs">
+        <span class="active-tab">{{ g.translate('CALORIES') }}</span>
+        <span>{{ g.translate('PROTEIN') }}</span>
+    </div>
+    
+    {% if summary and summary.total_calories > 0 %}
+    
+    <p class="last-update" style="text-align: right; margin-bottom: 10px;">
+        {{ g.translate('Last logged:') }} {{ summary.last_updated | default('N/A') }}
+    </p>
+
+    <div class="stats-row">
+        <div class="stat-item">
+            <span class="data-value-small" style="color: #4CAF50;">
+                {{ summary.total_calories | default('0') }}
+            </span>
+            <p>{{ g.translate('CALORIES') }}</p>
+        </div>
+        <div class="stat-item">
+            <span class="data-value-small" style="color: #00796B;">
+                {{ summary.total_protein | default('0') }}{{ g.translate('g') }}
+            </span>
+            <p>{{ g.translate('PROTEIN') }}</p>
+        </div>
+    </div>
+    <p style="text-align: center; font-size: 0.9em; color: #555;">
+        {{ g.translate('Goal:') }} **{{ summary.calories_goal | default('2000') }} {{ g.translate('kcal') }}**
+    </p>
+    
+    {% else %}
+    
+    <div style="padding: 10px; text-align: center;">
+        <p class="log-prompt" style="color: #e65100; margin-bottom: 10px;">
+            {{ g.translate('Log your first meal to see your summary!') }}
+        </p>
+    </div>
+    
+    {% endif %}
+
+    <hr class="form-separator" style="margin: 10px 0;">
+
+    <form action="{{ url_for('login_bp.log_meal') }}" method="POST" class="mini-meal-form" style="padding-top: 10px;">
+        <input type="text" name="food_name" placeholder="{{ g.translate('Food Name / Ingredients') }}" required>
+        <input type="number" name="calories" placeholder="{{ g.translate('Calories (kcal)') }}" required>
+        <input type="number" name="protein" placeholder="{{ g.translate('Protein (grams)') }}" required>
+        
+        <button type="submit" class="btn-log-meal">{{ g.translate('Log Meal') }}</button>
+    </form>
+</div>
+                <div class="data-summary-box progress-box">
+                <h4>{{ g.translate('My Health & Progress') }}</h4>
+                <div class="progress-info">
+                    <p>{{ g.translate('Latest Weight:') }} **<strong>75 {{ g.translate('kg') }}</strong>**</p>
+                    <p>{{ g.translate('Sleep Duration:') }} **<strong>7.5 {{ g.translate('hours') }}</strong>**</p>
+                </div>
+                <a href="/user/progress_log" class="view-details-link">{{ g.translate('View Full Progress History →') }}</a>
+            </div>
+
+        <div class="data-summary-box user-reminders-box">
+    <h4>{{ g.translate('Water Intake Reminders') }} 💧</h4>
+    
+    <div class="reminder-content">
+        <p class="summary-label">{{ g.translate('Active Times:') }}</p>
+        
+        <div class="reminder-time-tags" id="displayReminderTimesContainer"> 
+            <span class="no-times-set" id="noTimesMessage">{{ g.translate('Tap Edit to set your schedule.') }}</span>
+            </div>
+        
+        <p class="summary-count">
+            {{ g.translate('Total:') }} 
+            <strong id="displayReminderCount">0</strong> 
+            {{ g.translate('daily reminders') }}
+        </p>
+    </div>
+    
+    <a href="#" class="action-link" onclick="toggleReminderModal(true); return false;">
+        {{ g.translate('Edit/View Schedule →') }}
+    </a>
+</div>
+
+<div id="simpleReminderPopup" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000;">
+    <input type="text" id="reminderScheduleInput" placeholder="e.g., 9:30 AM, 1:00 PM, 4:00 PM">
+    </div>
+    
+                  <div class="data-summary-box history-box">
+                <h4>{{ g.translate('Meal Log History') }}</h4>
+                <div class="history-list">
+                    <div class="history-item">
+                        <div style="flex-grow: 1;">
+                            <strong>{{ g.translate('corn flakes') }}</strong> 
+                            <p class="meal-details">180 {{ g.translate('kcal') }} | 4{{ g.translate('g') }} {{ g.translate('Protein') }}</p>
+                            <p class="meal-time">{{ g.translate('07:30 AM') }}</p>
+                        </div>
+                        <button type="button" class="btn-delete">{{ g.translate('Delete') }}</button>
+                    </div>
+                    {% if history %}
+                        {% for meal in history %}
+                        <div class="history-item">
+                            <form method="POST" action="{{ url_for('login_bp.manage_meal',meal_id=meal.id) }}" style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
+                                <input type="hidden" name="action" value="delete">
+                                
+                                <div style="flex-grow: 1;">
+                                    <strong>{{ meal.food_name | default(g.translate('Unnamed Meal')) }}</strong>
+                                    <p class="meal-details">{{ meal.calories_intake }} {{ g.translate('kcal') }} | {{ meal.protein_intake }}{{ g.translate('g') }} {{ g.translate('Protein') }}</p>
+                                    <p class="meal-time">{{ meal.logged_time }}</p>
+                                </div>
+                                
+                                <button type="submit" 
+                                            class="btn-delete" 
+                                            onclick="return confirm('{{ g.translate('Are you sure you want to delete this meal?') }}');">
+                                    {{ g.translate('Delete') }}
+                                </button>
+                                </form>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+    </div>
+</div>
+<script>
+    // ----------------------------------------------------
+    // *** CHART.JS FUNCTION: Renders the Macronutrient Pie Chart ***
+    // ----------------------------------------------------
+    function renderMacroPieChart(cal, protein, carbs, fat) {
+        // 1. Destroy any old chart instance to prevent display errors
+        if (window.macroChartInstance) {
+            window.macroChartInstance.destroy(); 
+        }
+        
+        // 2. Get the canvas element context
+        const ctx = document.getElementById('macroPieChart').getContext('2d');
+        
+        // 3. Define the chart configuration
+        window.macroChartInstance = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                // Labels are translated using Jinja
+                labels: ['{{ g.translate("Protein") }}', '{{ g.translate("Carbs") }}', '{{ g.translate("Fat") }}'],
+                datasets: [{
+                    // Data values (grams)
+                    data: [protein, carbs, fat], 
+                    backgroundColor: ['#4CAF50', '#00796B', '#ff9800'], // Green, Teal, Orange
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: {
+                        display: true,
+                        // Chart title with dynamically inserted calorie value
+                        text: `{{ g.translate("Macro Breakdown") }} (${cal} {{ g.translate("kcal") }})`
+                    }
+                }
+            }
+        });
+    }
+
+    // ----------------------------------------------------
+    // *** TAB SWITCHING LOGIC ***
+    // ----------------------------------------------------
+    function showTab(tabId) {
+        // Hide all tab content and remove 'active' from headers
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-header').forEach(header => {
+            header.classList.remove('active');
+        });
+
+        // Show the selected tab content and set header as active
+        document.getElementById(tabId).classList.add('active');
+        // Find the corresponding header and activate it
+        const activeHeader = document.querySelector(`[onclick="showTab('${tabId}')"]`);
+        if (activeHeader) {
+            activeHeader.classList.add('active');
+        }
+    }
+
+    // Set the default tab on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        // Automatically activate the first tab (Summary) on page load
+        const defaultHeader = document.querySelector('.tab-header');
+        const defaultContent = document.querySelector('.tab-content');
+        if (defaultHeader && defaultContent) {
+            defaultHeader.classList.add('active');
+            defaultContent.classList.add('active');
+        }
+    });
+
+    // ----------------------------------------------------
+    // *** DELETE LOG FUNCTION (Calls DELETE endpoint) ***
+    // ----------------------------------------------------
+    async function deleteFoodLog(logId) {
+        const confirmation = confirm("{{ g.translate('Are you sure you want to delete this meal?') }}");
+        if (confirmation) {
+            try {
+                const response = await fetch(`/delete_food_log/${logId}`, {
+                    method: 'DELETE',
+                });
+
+                const result = await response.json();
+
+                // Inject translated success/failure messages
+                if (response.status === 200) {
+                    alert("{{ g.translate('Meal deleted successfully!') }}");
+                    window.location.reload(); // Reload to update totals and history list
+                } else {
+                    alert(result.error || "{{ g.translate('Failed to delete meal.') }}");
+                }
+            } catch (error) {
+                alert("{{ g.translate('An error occurred during deletion.') }}");
+            }
+        }
+    }
+
+    // ----------------------------------------------------
+    // 3. Function to submit the auto-filled log data as JSON
+    // ----------------------------------------------------
+    async function logAutoFilledFood(e) {
+        e.preventDefault();
+        const form = e.target;
+        
+        const logData = {
+            food_item: form.food_item.value,
+            calories: parseInt(form.calories.value),
+            protein: parseFloat(form.protein.value),
+            carbs: parseFloat(form.carbs.value),
+            fat: parseFloat(form.fat.value),
+            meal_type: form.meal_type.value,
+            log_date: new Date().toISOString().split('T')[0] // Current date
+        };
+
+        const response = await fetch('/log_food', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(logData)
+        });
+
+        const result = await response.json();
+        
+        const successMessage = '{{ g.translate("Food logged successfully!") }}';
+        const failureMessage = result.error || '{{ g.translate("Failed to log food.") }}';
+        
+        if (result.log_id) {
+            alert(successMessage);
+            window.location.reload(); 
+        } else {
+            alert(failureMessage);
+        }
+        return false;
+    }
+
+    // ----------------------------------------------------
+    // 4. Image Upload Handler (AJAX submission)
+    // ----------------------------------------------------
+    document.getElementById('imageUploadForm').onsubmit = async function(e) {
+        e.preventDefault();
+        
+        const form = e.target;
+        const formData = new FormData(form);
+        const resultDiv = document.getElementById('imageAnalysisResult');
+        
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `<p>{{ g.translate('Analyzing image...') }}</p>`;
+        
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.status !== 200 || data.error) {
+                const errorMessage = '{{ g.translate("Error during analysis:") }} ' + (data.error || 'Unknown error');
+                resultDiv.innerHTML = `<p style="color: red;">${errorMessage}</p>`;
+                return;
+            }
+
+            const result = data.result;
+            
+            // *** CRITICAL: CALL THE CHART FUNCTION HERE ***
+            // This renders the Pie Chart below the analysis results
+            renderMacroPieChart(result.calories, result.protein, result.carbs, result.fat);
+            
+            // --- Auto-filled Log Form HTML (NOW COMPACT) ---
+            const autoLogFormHTML = `
+                <p>
+                    <strong>${result.food}:</strong> 
+                    <span style="font-size: 1.1em; color: #4CAF50;">${result.calories} {{ g.translate('kcal') }}</span>
+                </p>
+
+                <p style="font-size: 0.9em; line-height: 1.2; margin-top: 5px;">
+                    <span style="color: #00796B;">{{ g.translate('Protein') }}: ${result.protein}{{ g.translate('g') }}</span>
+                    &nbsp;|&nbsp;
+                    <span style="color: #ff9800;">{{ g.translate('Carbs') }}: ${result.carbs}{{ g.translate('g') }}</span>
+                    &nbsp;|&nbsp;
+                    <span style="color: #D32F2F;">{{ g.translate('Fat') }}: ${result.fat}{{ g.translate('g') }}</span>
+                </p>
+
+                <p style="font-size: 0.8em; color: #555; margin-top: 10px;">${data.log_prompt}</p>
+
+                <form action="/log_food" method="POST" onsubmit="return logAutoFilledFood(event)" id="autoLogSubmitForm">
+                    <input type="hidden" name="food_item" value="${result.food}">
+                    <input type="hidden" name="calories" value="${result.calories}">
+                    <input type="hidden" name="protein" value="${result.protein}">
+                    <input type="hidden" name="carbs" value="${result.carbs || 0}">
+                    <input type="hidden" name="fat" value="${result.fat || 0}">
+                    <input type="hidden" name="meal_type" value="Lunch"> 
+                    
+                    <button type="submit" class="btn-submit" style="width: 100%; padding: 8px 15px;">
+                        {{ g.translate('Log Meal (Auto-Filled)') }}
+                    </button>
+                </form>
+            `;
+            
+            resultDiv.innerHTML = autoLogFormHTML;
+            
+        } catch (error) {
+            resultDiv.innerHTML = `<p style="color: red;">{{ g.translate('An unknown network error occurred.') }}</p>`;
+        }
+    };
+</script>
+</body>
+</html>

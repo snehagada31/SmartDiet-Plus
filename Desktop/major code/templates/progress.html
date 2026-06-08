@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Health History - SmartDiet+</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Add some basic styles for the history table/list here */
+        .history-container { 
+            max-width: 800px; margin: 50px auto; padding: 20px; 
+            background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h2 { color: #00796B; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .progress-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .progress-table th, .progress-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .progress-table th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <div class="history-container">
+        <h2>Your Full Progress History</h2>
+        <a href="{{ url_for('login_bp.profile') }}">← Back to Profile</a>
+
+        {% if history %}
+            <table class="progress-table">
+                <thead>
+                    <tr>
+                        <th>Date Logged</th>
+                        <th>Weight (kg)</th>
+                        <th>Sleep (hours)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in history %}
+                    <tr>
+                        <td>{{ entry.date_logged }}</td> 
+                        <td>{{ entry.weight | default('N/A') }}</td>
+                        <td>{{ entry.sleep_duration | default('N/A') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You haven't logged any health progress yet. Go back to your profile to log your first entry!</p>
+        {% endif %}
+    </div>
+</body>
+</html>

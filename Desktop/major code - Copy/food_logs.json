@@ -1,0 +1,102 @@
+{
+    "demo_user_id": {
+        "2025-08-31": [
+            {
+                "id": "bc589452-edf2-4049-8121-481dd9631558",
+                "food_item": "milk",
+                "calories": 232.0,
+                "protein": 44.0,
+                "carbs": 5.0,
+                "fat": 67.0,
+                "meal_type": "Breakfast",
+                "timestamp": "23:20:51"
+            }
+        ],
+        "2025-01-31": [],
+        "2005-01-21": [
+            {
+                "id": "5f8e7706-f89d-426a-9d7a-1d733f359f34",
+                "food_item": "aple",
+                "calories": 300.0,
+                "protein": 60.0,
+                "carbs": 69.0,
+                "fat": 80.0,
+                "meal_type": "Breakfast",
+                "timestamp": "23:41:14"
+            }
+        ],
+        "2005-01-04": [
+            {
+                "id": "9d8bb6c3-d67c-4ae8-b815-9ddd27649e90",
+                "food_item": "milk",
+                "calories": 3.0,
+                "protein": 56.0,
+                "carbs": 89.0,
+                "fat": 9.0,
+                "meal_type": "Breakfast",
+                "timestamp": "23:41:47"
+            }
+        ],
+        "2005-05-21": [
+            {
+                "id": "8464175f-239f-4d54-bd30-042d3d762dc3",
+                "food_item": "furits",
+                "calories": 23.0,
+                "protein": 50.0,
+                "carbs": 70.0,
+                "fat": 30.0,
+                "meal_type": "Breakfast",
+                "timestamp": "23:49:44"
+            }
+        ],
+        "2005-06-05": [],
+        "2007-02-21": [
+            {
+                "id": "52480e4c-5ff2-4c94-ace2-8ab1b2adfcb2",
+                "food_item": "g",
+                "calories": 5.0,
+                "protein": 60.0,
+                "carbs": 70.0,
+                "fat": 70.0,
+                "meal_type": "Breakfast",
+                "timestamp": "00:09:08"
+            }
+        ],
+        "2025-06-21": [
+            {
+                "id": "9e77174f-c0a1-4ee5-aab4-8d8568eede7b",
+                "food_item": "milk",
+                "calories": 4.0,
+                "protein": 50.0,
+                "carbs": 70.0,
+                "fat": 40.0,
+                "meal_type": "Dinner",
+                "timestamp": "00:10:55"
+            }
+        ],
+        "2025-06-23": [
+            {
+                "id": "00233529-5068-4de3-bbf0-ecd06d20dd5d",
+                "food_item": "apple",
+                "calories": 56.0,
+                "protein": 6.0,
+                "carbs": 7.0,
+                "fat": 8.0,
+                "meal_type": "Breakfast",
+                "timestamp": "00:11:14"
+            }
+        ],
+        "2025-03-23": [
+            {
+                "id": "2505ad64-7202-4921-86ec-81e5445d3a09",
+                "food_item": "rr",
+                "calories": 77.0,
+                "protein": 880.0,
+                "carbs": 990.0,
+                "fat": 9990.0,
+                "meal_type": "Breakfast",
+                "timestamp": "00:40:56"
+            }
+        ]
+    }
+}

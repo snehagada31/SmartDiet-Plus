@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="{{ g.lang_code }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ g.translate('An Advanced Intelligent Framework for Personalized Diet Planning, Calorie Tracking, and Health Monitoring using SmartDiet+') }}</title>
+    <meta name="description" content="{{ g.translate('SmartDiet+ helps you with personalized diet and calorie tracking.') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+    
+
+    <style>
+        /* === Translation Popup Styles (Retained for functionality) === */
+        .translation-popup-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .language-options-popup {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .lang-btn-popup {
+            background-color: #00796B;
+            color: white;
+            border: 1px solid #00796B;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .lang-btn-popup:hover {
+            background-color: #4CAF50;
+        }
+        
+        .lang-btn-popup.active {
+            background-color: #ff9800;
+            border-color: #ff9800;
+        }
+        
+        /* 🚨 FIXED TAB STRUCTURE STYLES 🚨 
+            We rely on JavaScript to set the display property. */
+        main section { 
+            display: none; 
+            min-height: 500px; 
+            padding: 20px;
+        }
+
+        /* START: NEW CSS FOR DIET CHALLENGE CARDS (REPLACING SPOTLIGHT) */
+        .diet-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .diet-card {
+            flex: 1 1 calc(50% - 40px); /* Two cards per row on larger screens */
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            min-width: 280px;
+            border-left: 5px solid; /* For color accent */
+        }
+        .diet-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .focus-heading {
+            font-size: 1.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .focus-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        /* Color themes for Diet Focus Cards */
+        .hydration { background-color: #e0f7fa; color: #00BCD4; border-left-color: #00BCD4; } /* Cyan/Water */
+        .fiber { background-color: #f3e5f5; color: #9C27B0; border-left-color: #9C27B0; } /* Purple/Gut Health */
+        .protein { background-color: #fff3e0; color: #FF9800; border-left-color: #FF9800; } /* Orange/Muscle */
+        .micros { background-color: #e8f5e9; color: #4CAF50; border-left-color: #4CAF50; } /* Green/Vitamins */
+        /* END: NEW CSS FOR DIET CHALLENGE CARDS */
+
+
+        /* START: EXISTING CSS FOR EXERCISE CARDS (RETAINED) */
+        .exercise-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .exercise-card {
+            flex: 1 1 calc(50% - 40px); /* Two cards per row on larger screens */
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            min-width: 280px;
+        }
+        .exercise-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .goal-heading {
+            font-size: 1.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .goal-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .strength { background-color: #ffe0b2; color: #E65100; } /* Light orange/Copper */
+        .destress { background-color: #e3f2fd; color: #1976D2; } /* Light blue/Blue */
+        .energy { background-color: #c8e6c9; color: #388E3C; } /* Light green/Green */
+        .flexibility { background-color: #fce4ec; color: #D81B60; } /* Light pink/Pink */
+        /* END: EXISTING CSS FOR EXERCISE CARDS (RETAINED) */
+
+        /* NEW STYLE FOR THE DIET MEALS HEADING AND CARDS */
+        .section-subheading {
+            font-size: 1.5em; /* Larger font size */
+            font-weight: 600; /* Bolder */
+            color: #388E3C; /* A green color that matches the brand theme */
+            text-align: center; /* Center the text for better visual balance */
+            margin-top: 30px; /* Add some space above */
+            margin-bottom: 20px; /* Add some space below */
+            padding-bottom: 5px; /* Creates a line effect */
+            border-bottom: 2px solid #4CAF50; /* A matching underline */
+            display: block; /* Ensures the border takes up the full width */
+        }
+        /* Styling for the meal cards themselves to match the new look */
+        .meal-card {
+            background-color: #ffffff; /* White background for contrast */
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .meal-card h3 {
+            color: #00796B; /* Teal color for the meal names */
+            font-size: 1.4em;
+        }
+
+        /* NEW CSS FOR HOMEPAGE HERO SECTION */
+/* Homepage hero section styles */
+/* Update the homepage-hero to allow space between content */
+/* Container for the entire hero section */
+.homepage-hero {
+    display: flex;
+    /* Use 'stretch' to make sure both flex items (text and image) fill the container height */
+    align-items: stretch;
+    justify-content: space-between;
+    width: 100%;
+    /* Set a minimum height for the hero section to ensure content is visible */
+    min-height: 550px; /* Adjust this value as needed to control the overall height */
+    background-color: #f0fdf4;
+    padding: 60px 80px; /* Increased padding for more breathing room */
+    box-sizing: border-box;
+    /* Allow wrapping only if necessary on very small screens, otherwise keep them side-by-side */
+    flex-wrap: wrap; 
+}
+
+/* Styles for the text content section */
+.hero-content {
+    flex: 1; /* Allows it to grow and shrink */
+    min-width: 400px; /* Ensure text section doesn't get too small */
+    max-width: 50%; /* Make sure it takes about half the space */
+    padding-right: 40px; /* Add space between text and image */
+    text-align: left;
+    display: flex; /* Make content itself a flex container */
+    flex-direction: column; /* Stack text elements vertically */
+    justify-content: center; /* Vertically center the text content */
+}
+
+.main-title {
+    font-size: 3em; /* Keep original large font for impact */
+    font-weight: 900;
+    color: #388E3C;
+    margin-bottom: 5px;
+    line-height: 1.1; /* Adjust line height for better readability */
+}
+
+.secondary-title {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #4CAF50;
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+
+.hero-description {
+    font-size: 1.1em; /* Slightly larger for better readability */
+    color: #555;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.hero-cta-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+/* Button styles remain the same */
+.cta-button {
+    padding: 12px 25px; /* Slightly larger buttons */
+    border-radius: 50px;
+    font-weight: 600;
+    border: 2px solid;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s, color 0.2s;
+    font-size: 1em; /* Adjusted font size */
+}
+
+.primary-cta {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+.primary-cta:hover {
+    transform: translateY(-2px);
+    background-color: #388E3C;
+    border-color: #388E3C;
+}
+
+.secondary-cta {
+    background-color: transparent;
+    color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.secondary-cta:hover {
+    transform: translateY(-2px);
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Styles for the image container */
+.hero-image-container {
+    flex: 1; /* Allow it to grow and shrink */
+    min-width: 450px; /* Ensure image section has enough space */
+    max-width: 50%; /* Make sure it takes about half the space */
+    display: flex;
+    justify-content: flex-end; /* Align the image to the right within its container */
+    align-items: center; /* Vertically center the image */
+    height: auto; /* Allow height to adjust based on content */
+    overflow: hidden;
+    position: relative;
+    /* Adjust background gradient to better fit the image placement */
+    background: linear-gradient(to top left, transparent 40%, #e0f2f1 60%); 
+    background-size: 100% 100%;
+    border-radius: 0 0 0 100px; /* NEW: Rounded corner at bottom left of image section for style */
+}
+
+/* Styles for the actual image */
+.responsive-hero-image {
+    max-width: 90%; /* Control the image size relative to its container */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: contain; /* Ensure the entire image is visible within its bounds */
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* Stronger shadow for depth */
+    margin-right: -50px; /* Pull the image slightly out to the right for a more dynamic look, adjust as needed */
+    z-index: 2; /* Ensure image is above any background elements */
+}
+
+/* Responsive adjustments for smaller screens (e.g., tablets/mobiles) */
+@media (max-width: 900px) {
+    /* ... (Your existing responsive styles are good, but make sure the below overrides are applied) ... */
+    .homepage-hero {
+        flex-direction: column; /* Stack items vertically */
+        text-align: center;
+        min-height: auto; /* Remove fixed height on small screens */
+        padding: 40px 20px;
+        background: none;
+    }
+    .hero-content,
+    .hero-image-container {
+        max-width: 100%; /* Take full width */
+        min-width: unset; /* Remove min-width constraints */
+        padding: 20px 0; /* Adjust padding for mobile */
+    }
+    .hero-content {
+        padding-right: 0; /* Remove right padding on mobile */
+    }
+    .hero-image-container {
+        justify-content: center; /* Center image on mobile */
+        background: none; /* Remove background gradient on mobile */
+        border-radius: 0; /* Remove rounded corner on mobile */
+    }
+    .responsive-hero-image {
+        max-width: 80%; /* Slightly smaller on mobile */
+        margin-right: 0; /* Remove negative margin on mobile */
+        max-height: 300px; /* Constrain image height on mobile */
+    }
+    .main-title {
+        font-size: 2.5em; /* Adjust font size for mobile */
+    }
+    .secondary-title {
+        font-size: 1.5em; /* Adjust font size for mobile */
+    }
+    .hero-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+}
+.intro-container {
+    display: flex;
+    align-items: center; /* This will vertically align the text and the image */
+    justify-content: space-between; /* This will push the text to the left and the image to the right */
+    padding: 20px 0;
+    width: 100%; /* Ensures the container takes up the full width */
+    flex-wrap: nowrap; /* Prevents wrapping on desktop to keep them side-by-side */
+}
+</style>
+</head>
+
+<body>
+    <header>
+        <h1> {{ g.translate('SmartDiet+') }} </h1>
+        <p>{{ g.translate('An Advanced Intelligent Framework for Personalized Diet Planning, Calorie Tracking, and Health Monitoring using SmartDiet+') }}</p>
+        <button class="theme-toggle" onclick="toggleTheme()">{{ g.translate('Toggle Theme') }}</button>
+    </header>
+
+    <nav>
+        <a href="#home-section" class="tab-link active" onclick="showContent('home-section')">{{ g.translate('Home') }}</a> 
+        <a href="#profile" class="tab-link" onclick="showContent('profile')">{{ g.translate('Profile') }}</a>
+        <a href="#diet" class="tab-link" onclick="showContent('diet')">{{ g.translate('Diet Plans') }}</a>
+        <a href="#tracker" class="tab-link" onclick="showContent('tracker')">{{ g.translate('Calorie Tracker') }}</a>
+        <a href="#exercise" class="tab-link" onclick="showContent('exercise')">{{ g.translate('Exercise') }}</a>
+        <a href="#smart-meal" class="tab-link" onclick="showContent('smart-meal')">{{ g.translate('Smart Meal') }}</a>
+        <a href="#bmi" class="tab-link" onclick="showContent('bmi')">{{ g.translate('BMI Calculator') }}</a>
+        <a href="#recipes-section" class="tab-link" onclick="showContent('recipes-section')">{{ g.translate('Recipes') }}</a>
+        <a href="#progress" class="tab-link" onclick="showContent('progress')">{{ g.translate('Progress') }}</a>
+        <a href="#auth" onclick="openPopup('loginPopup')">{{ g.translate('Login') }}</a>
+        <a href="#translate" onclick="openPopup('translatePopup')">{{ g.translate('Translate') }}</a>
+        <a href="#help" class="tab-link" onclick="showContent('help')">{{ g.translate('Help') }}</a>
+
+    </nav>
+
+    <main>
+        <section id="home-section" class="tab-content homepage-hero" style="display: block;">
+    <div class="intro-container"> 
+        <div class="hero-content">
+            <h2 class="main-title">{{ g.translate('SmartDiet+') }}</h2>
+            <p class="secondary-title">{{ g.translate('Your Smart Path to Health & Wellness') }}</p>
+            <p class="hero-description">{{ g.translate('Personalized diet plans, calorie tracking, and health monitoring for a healthier you.') }}</p>
+            <div class="hero-cta-buttons">
+                <button class="cta-button primary-cta" onclick="showContent('profile')">{{ g.translate('Start Your Journey') }}</button>
+                <button class="cta-button secondary-cta" onclick="showContent('diet')">{{ g.translate('Learn More') }}</button>
+            </div>
+        </div>
+        <div class="hero-image-container">
+            <img src="{{ url_for('static', filename='images/smartdiet-image.png') }}"
+                 alt="{{ g.translate('People leading healthy lifestyles with a diet and tracking app interface') }}"
+                 class="responsive-hero-image">
+        </div>
+    </div>
+</section>
+
+
+        <section id="home" class="tab-content"> 
+            <h2>{{ g.translate('Welcome to SmartDiet+') }}</h2>
+            <p>{{ g.translate('SmartDiet+ is your friendly AI-powered nutrition assistant.') }}</p>
+        </section>
+
+        <section id="profile" class="tab-content" style="display: block;">
+            <h2>{{ g.translate('Your Profile') }}</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">{{ g.translate('Name') }}</label>
+                    <input type="text" id="name" name="username" placeholder="{{ g.translate('e.g., Sushma') }}" autocomplete="nope">
+                </div>
+                <div class="form-group">
+                    <label for="age">{{ g.translate('Age') }}</label>
+                    <input type="number" id="age" name="age" placeholder="{{ g.translate('e.g., 25') }}" autocomplete="nope">
+                </div>
+                <div class="form-group">
+                    <label for="gender">{{ g.translate('Gender') }}</label>
+                    <select id="gender" name="gender">
+                        <option>{{ g.translate('Male') }}</option>
+                        <option>{{ g.translate('Female') }}</option>
+                        <option>{{ g.translate('Other') }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="email">{{ g.translate('Email') }}</label>
+                    <input type="email" id="email" name="email" placeholder="{{ g.translate('e.g., your.email@example.com') }}" required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">{{ g.translate('Password') }}</label>
+                    <input type="password" id="password" name="password" placeholder="{{ g.translate('Create your password') }}" required autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">{{ g.translate('Confirm Password') }}</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="{{ g.translate('Re-enter password') }}" required autocomplete="new-password">
+                </div>
+
+                <div class="form-group">
+                    <label for="occupation">{{ g.translate('Occupation') }}</label>
+                    <input list="occupations" id="occupation" name="occupation" placeholder="{{ g.translate('e.g., Student') }}" autocomplete="nope">
+                    <datalist id="occupations">
+                        <option value="{{ g.translate('Student') }}">
+                        <option value="{{ g.translate('Engineer') }}">
+                        <option value="{{ g.translate('Doctor') }}">
+                        <option value="{{ g.translate('Teacher') }}">
+                        <option value="{{ g.translate('Artist') }}">
+                        <option value="{{ g.translate('Fitness Trainer') }}">
+                        <option value="{{ g.translate('Business Analyst') }}">
+                    </datalist>
+                </div>
+            </div> 
+            <div class="form-group">
+                <label for="citySelect">{{ g.translate('City') }}</label>
+                <input list="cities" id="citySelect" name="city" placeholder="{{ g.translate('e.g., Mumbai') }}" autocomplete="nope">
+                <datalist id="cities">
+                    <option value="{{ g.translate('Mumbai') }}">
+                    <option value="{{ g.translate('Chennai') }}">
+                    <option value="{{ g.translate('Kalaburagi') }}">
+                    <option value="{{ g.translate('Kochi') }}">
+                    <option value="{{ g.translate('Kolkata') }}">
+                    <option value="{{ g.translate('Shimla') }}">
+                    <option value="{{ g.translate('Darjeeling') }}">
+                    <option value="{{ g.translate('Mysuru') }}">
+                    <option value="{{ g.translate('Coimbatore') }}">
+                    <option value="{{ g.translate('Jaipur') }}">
+                    <option value="{{ g.translate('Jodhpur') }}">
+                    <option value="{{ g.translate('Bikaner') }}">
+                    <option value="{{ g.translate('Barmer') }}">
+                    <option value="{{ g.translate('Leh') }}">
+                    <option value="{{ g.translate('Manali') }}">
+                    <option value="{{ g.translate('Nainital') }}">
+                    <option value="{{ g.translate('Almora') }}">
+                    <option value="{{ g.translate('Pune') }}">
+                    <option value="{{ g.translate('Hyderabad') }}">
+                    <option value="{{ g.translate('Bengaluru') }}">
+                    <option value="{{ g.translate('Ahmedabad') }}">
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label for="dietPreference">{{ g.translate('Diet Preference') }}</label>
+                <select id="dietPreference" name="diet_preference">
+                    <option>{{ g.translate('Vegetarian') }}</option>
+                    <option>{{ g.translate('Non-Vegetarian') }}</option>
+                    <option>{{ g.translate('Vegan') }}</option>
+                    <option>{{ g.translate('Gluten-Free') }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="allergies">{{ g.translate('Allergies') }}</label>
+                <textarea id="allergies" name="allergies" placeholder="{{ g.translate('E.g., peanuts, dairy, gluten') }}" autocomplete="nope"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">{{ g.translate('Mindfulness Notes(How are u feeling tody)') }}</label>
+                <textarea id="notes" name="notes" placeholder="{{ g.translate('Any mental or physical wellness notes...') }}" autocomplete="nope"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="healthCondition">{{ g.translate('Health Condition') }}</label>
+                <select id="healthCondition" name="healthCondition">
+                    <option value="">{{ g.translate('None') }}</option>
+                    <option value="diabetes">{{ g.translate('Diabetes') }}</option>
+                    <option value="hypertension">{{ g.translate('Hypertension') }}</option>
+                    <option value="weight_loss">{{ g.translate('Weight Loss') }}</option>
+                    <option value="bodybuilding">{{ g.translate('Bodybuilding') }}</option>
+                    <option value="pregnancy">{{ g.translate('Pregnancy') }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button onclick="getRecommendation()">{{ g.translate('Get Personalized Diet & Exercise') }}</button>
+            </div>
+            <div id="recommendationOutput" style="margin-top: 20px;">
+            </div>
+            <button onclick="validateProfile()">{{ g.translate('Submit Profile') }}</button>
+        </section>
+
+        <section id="diet" class="tab-content">
+            <button class="back-button" onclick="goBackToProfile()">{{ g.translate('← Back') }}</button>
+            <h2 class="section-subheading">{{ g.translate('Curated Meals for Quick Fueling') }}</h2>
+            <div class="meal-card">
+                <h3>{{ g.translate('Grilled Veggie Bowl') }}</h3>
+                <p>{{ g.translate('Calories: 350 | Vegan | Gluten-Free') }}</p>
+            </div>
+            <div class="meal-card">
+                <h3>{{ g.translate('Chicken Salad') }}</h3>
+                <p>{{ g.translate('Calories: 420 | Non-Veg | Low-Carb') }}</p>
+            </div>
+            <h3 class="section-subheading">{{ g.translate('Nourish Your Day: Find Your Fuel 🍎') }}</h3>
+            <div class="diet-grid">
+                
+                <div class="diet-card hydration">
+                    <div class="focus-icon">💧</div>
+                    <div class="focus-heading">{{ g.translate('Hydration Focus') }}</div>
+                    <p>{{ g.translate('Daily Challenge: **The 8-Glass Water Goal**') }}</p>
+                    <p style="font-size: 0.9em;">{{ g.translate('*Add a slice of lemon or mint to make it refreshing!*') }}</p>
+                </div>
+                
+                <div class="diet-card fiber">
+                    <div class="focus-icon">🥦</div>
+                    <div class="focus-heading">{{ g.translate('Gut Health Focus') }}</div>
+                    <p>{{ g.translate('Daily Challenge: **The Veggie Double-Up**') }}</p>
+                    <p style="font-size: 0.9em;">{{ g.translate('*Ensure your plate is half-full of veggies (raw or cooked) for dinner.*') }}</p>
+                </div>
+                
+                <div class="diet-card protein">
+                    <div class="focus-icon">🥚</div>
+                    <div class="focus-heading">{{ g.translate('Protein Focus') }}</div>
+                    <p>{{ g.translate('Daily Challenge: **The High-Protein Snack Swap**') }}</p>
+                    <p style="font-size: 0.9em;">{{ g.translate('*Replace one high-sugar snack with nuts, seeds, or a yogurt parfait.*') }}</p>
+                </div>
+                
+                <div class="diet-card micros">
+                    <div class="focus-icon">🍇</div>
+                    <div class="focus-heading">{{ g.translate('Vitamin Focus') }}</div>
+                    <p>{{ g.translate('Daily Challenge: **Eat the Rainbow**') }}</p>
+                    <p style="font-size: 0.9em;">{{ g.translate('*Try to consume foods of 3 different natural colors today.*') }}</p>
+                </div>
+            </div>
+            </section>
+
+        <section id="tracker" class="tab-content main-content-section card">
+            <button class="back-button" onclick="goBackToProfile()" style="display: none;">{{ g.translate('← Back') }}</button>
+            <h2>{{ g.translate('Daily Food & Calorie Tracker') }}</h2>
+
+            <div class="form-group">
+                <label for="logFoodItem">{{ g.translate('Food Item:') }}</label>
+                <input type="text" id="logFoodItem" placeholder="{{ g.translate('e.g., Apple, Grilled Chicken') }}" required onkeydown="handleEnterKey(event, 'logCalories')">
+            </div>
+            <div class="form-group">
+                <label for="logCalories">{{ g.translate('Calories (kcal):') }}</label>
+                <input type="number" id="logCalories" placeholder="{{ g.translate('e.g., 95, 165') }}" min="0" required onkeydown="handleEnterKey(event, 'logProtein')">
+            </div>
+            <div class="form-group">
+                <label for="logProtein">{{ g.translate('Protein (g):') }}</label>
+                <input type="number" id="logProtein" placeholder="{{ g.translate('e.g., 3, 25') }}" min="0" value="0" required onkeydown="handleEnterKey(event, 'logCarbs')">
+            </div>
+            <div class="form-group">
+                <label for="logCarbs">{{ g.translate('Carbohydrates (g):') }}</label>
+                <input type="number" id="logCarbs" placeholder="{{ g.translate('e.g., 25, 0') }}" min="0" value="0" required onkeydown="handleEnterKey(event, 'logFat')">
+            </div>
+            <div class="form-group">
+                <label for="logFat">{{ g.translate('Fat (g):') }}</label>
+                <input type="number" id="logFat" placeholder="{{ g.translate('e.g., 0, 7') }}" min="0" value="0" required onkeydown="handleEnterKey(event, 'logMealType')">
+            </div>
+            <div class="form-group">
+                <label for="logMealType">{{ g.translate('Meal Type:') }}</label>
+                <select id="logMealType" required onkeydown="handleEnterKey(event, 'logDate')">
+                    <option value="Breakfast">{{ g.translate('Breakfast') }}</option>
+                    <option value="Lunch">{{ g.translate('Lunch') }}</option>
+                    <option value="Dinner">{{ g.translate('Dinner') }}</option>
+                    <option value="Snack">{{ g.translate('Snack') }}</option>
+                    <option value="Other">{{ g.translate('Other') }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="logDate">{{ g.translate('Date:') }}</label>
+                <input type="date" id="logDate" required onkeydown="handleEnterKey(event, 'addFoodToTrackerButton')">
+            </div>
+            <button onclick="logFood()" id="addFoodToTrackerButton">{{ g.translate('Add Food to Tracker') }}</button>
+
+            <hr style="margin: 20px 0;">
+
+            <div id="calorieSummaryOutput" class="output-section">
+                <h3>{{ g.translate('Summary for') }} <span id="currentSummaryDate">{{ g.translate('Today') }}</span></h3>
+                <p>{{ g.translate('Total Calories Consumed:') }} <span id="totalCalories">0</span> {{ g.translate('kcal') }} <br>
+                    {{ g.translate('Goal:') }} <span id="dailyCalorieGoal">2200</span> {{ g.translate('kcal') }}</p>
+                <p>{{ g.translate('Protein:') }} <span id="totalProtein">0</span> {{ g.translate('g') }} | {{ g.translate('Carbs:') }} <span id="totalCarbs"> </span> {{ g.translate('g') }} | {{ g.translate('Fat:') }} <span id="totalFat"></span> {{ g.translate('g') }} <br>
+                    {{ g.translate('Goals: P:') }} <span id="dailyProteinGoal">70</span>{{ g.translate('g') }}, {{ g.translate('C:') }} <span id="dailyCarbsGoal">250</span>{{ g.translate('g') }}, {{ g.translate('F:') }} <span id="dailyFatGoal">60</span>{{ g.translate('g') }}</p>
+                <progress id="calorieProgress" value="0" max="2200"></progress>
+                <p id="calorieStatus">{{ g.translate('Track your daily progress!') }}</p>
+                
+                <h4>{{ g.translate('Logged Foods:') }}</h4>
+                <ul id="loggedFoodsList">
+                    <li>{{ g.translate('No food logged yet for this date.') }}</li>
+                </ul>
+
+                <hr style="margin: 20px 0;">
+                <div class="simple-tracker-controls">
+                    <h3>{{ g.translate('Simple Calorie Log (In-App Only)') }}</h3>
+                    <p>{{ g.translate('Meals Logged (Simple):') }} 
+                        <span id="breakfastCalories">0 kcal</span> / 
+                        <span id="lunchCalories">0 kcal</span> / 
+                        <span id="dinnerCalories">0 kcal</span> / 
+                        <span id="snackCalories">0 kcal</span>
+                    </p>
+                    <input type="number" id="calories" placeholder="{{ g.translate('Enter quick kcal amount') }}">
+                    <button onclick="trackCalories()">{{ g.translate('Quick Log Calories') }}</button>
+                    <button onclick="resetCalorieTracker()">{{ g.translate('Reset Simple Tracker') }}</button>
+                </div>
+                <div style="margin-top: 20px;">
+                    <h3>{{ g.translate('Weekly Calorie Chart') }}</h3>
+                    <canvas id="weeklyCalorieChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <section id="exercise" class="tab-content">
+            <button class="back-button" onclick="goBackToProfile()">{{ g.translate('← Back') }}</button>
+            <h2>{{ g.translate('Basic Exercises') }}</h2>
+            <h3 style="margin-top: 20px;">{{ g.translate('Train Smart: Find Your Focus 🎯') }}</h3>
+            <div class="exercise-grid">
+                
+                <div class="exercise-card strength">
+                    <div class="goal-icon">💪</div>
+                    <div class="goal-heading">{{ g.translate('Build STRENGTH') }}</div>
+                    <p>{{ g.translate('Your Challenge: **The 7-Minute Home Circuit**') }}</p>
+                    <p style="font-size: 0.9em;">{{ g.translate('*5 rounds of Squats, Push-ups, and Plank.*') }}</p>
+                </div>
+                
+                <div class="exercise-card destress">
+                    <div class="goal-icon">🧘‍♀️</div>
+                    <div class="goal-heading">{{ g.translate('DE-STRESS & Calm') }}</div>
+                    <p>{{ g.translate('Your Challenge: **Mindful Breathing Flow**') }}</p>
+                    <p style="font-size: 0.9em;">{{ g.translate('*15 minutes of progressive muscle relaxation and deep belly breathing.*') }}</p>
+                </div>
+                
+                <div class="exercise-card energy">
+                    <div class="goal-icon">⚡</div>
+                    <div class="goal-heading">{{ g.translate('Boost ENERGY') }}</div>
+                    <p>{{ g.translate('Your Challenge: **High-Intensity Dance Party**') }}</p>
+                    <p style="font-size: 0.9em;">{{ g.translate('*Find your favorite 3 songs and move non-stop!*') }}</p>
+                </div>
+                
+                <div class="exercise-card flexibility">
+                    <div class="goal-icon">🤸</div>
+                    <div class="goal-heading">{{ g.translate('Improve FLEXIBILITY') }}</div>
+                    <p>{{ g.translate('Your Challenge: **Full-Body Stretch Routine**') }}</p>
+                    <p style="font-size: 0.9em;">{{ g.translate('*Focus on holding each stretch for 45 seconds.*') }}</p>
+                </div>
+            </div>
+            </section>
+
+        <section id="smart-meal" class="tab-content">
+            <button class="back-button" onclick="goBackToProfile()">{{ g.translate('← Back') }}</button>
+            <h2>{{ g.translate('Smart Meal Generator') }}</h2>
+            <button onclick="fetchSmartMealFromBackend()">{{ g.translate('Get a Smart Meal Suggestion') }}</button>
+            <div id="smartMealOutput"></div>
+            <div id="groceryOutput" style="margin-top: 20px;"></div>
+            <div id="healthImpact" style="margin-top: 30px; padding: 15px; background-color: #f9f9f9; border-radius: 10px;">
+                <h3>{{ g.translate('Research & Real-World Impact') }}</h3>
+                <p>
+                    {{ g.translate('Our dietary suggestions are based on established nutritional research to help manage diabetes, hypertension, weight loss, support bodybuilding, and pregnancy nutrition. These plans use easily available ingredients, ensuring you achieve measurable health benefits in daily life.') }}
+                </p>
+            </div>
+        </section>
+
+        <section id="bmi" class="tab-content">
+            <button class="back-button" onclick="goBackToProfile()">{{ g.translate('← Back') }}</button>
+            <h2>{{ g.translate('BMI Calculator') }}</h2>
+            <div class="bmi-card">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="unitToggle">{{ g.translate('Units') }}</label>
+                        <select id="unitToggle">
+                            <option value="metric">{{ g.translate('Metric (cm/kg)') }}</option>
+                            <option value="imperial">{{ g.translate('Imperial (in/lb)') }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="height">{{ g.translate('Height') }} (<span id="heightUnit">{{ g.translate('cm') }}</span>)</label>
+                        <input type="number" id="height" placeholder="{{ g.translate('e.g., 170') }}">
+                        <input type="range" id="heightRange" min="100" max="220" value="170">
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">{{ g.translate('Weight') }} (<span id="weightUnit">{{ g.translate('kg') }}</span>)</label>
+                        <input type="number" id="weight" placeholder="{{ g.translate('e.g., 65') }}">
+                        <input type="range" id="weightRange" min="30" max="150" value="65">
+                    </div>
+                </div>
+                <button onclick="calculateBMI()">{{ g.translate('Calculate BMI') }}</button>
+
+                <div class="bmi-result">
+                    <p id="bmiResult" class="bmi-value"></p>
+                    <p id="bmiCategory" class="bmi-category"></p>
+                    <p id="bmiEmoji" class="bmi-emoji"></p>
+                    <p id="idealWeight" class="bmi-ideal"></p>
+                    <progress id="bmiProgress" value="0" max="40"></progress>
+                </div>
+                <small>{{ g.translate('Note: BMI is an indicator and does not replace professional medical advice.') }}</small>
+            </div>
+        </section>
+
+        <section id="help" class="tab-content">
+            <button class="back-button" onclick="goBackToProfile()">{{ g.translate('← Back') }}</button>
+            <h2>{{ g.translate('Need Help?') }}</h2>
+            <p>{{ g.translate('Email: support@smartdietplus.ai') }}</p>
+        </section>
+        
+        <section id="recipes-section" class="tab-content">
+            <button class="back-button" onclick="goBackToProfile()">{{ g.translate('← Back') }}</button>
+            <h2>{{ g.translate('Recipes') }}</h2>
+            <p>{{ g.translate('Explore a collection of healthy recipes here.') }}</p>
+            <button onclick="navigateToFilteredRecipes()">{{ g.translate('Go to Filtered Recipes') }}</button>
+        </section>
+
+        <section id="progress" class="tab-content">
+            <h2>{{ g.translate('Progress & Gamification') }}</h2>
+            <div class="gamification-panel">
+                <div class="badge-box">
+                    <h3>{{ g.translate('Your Points') }}</h3>
+                    <p id="points">0</p>
+                </div>
+                <div class="badge-box">
+                    <h3>{{ g.translate('Your Badge') }}</h3>
+                    <p id="badge">{{ g.translate('Beginner') }}</p>
+                </div>
+                <div class="badge-actions">
+                    <button onclick="completeTask()">{{ g.translate('Mark Completed (Earn Points)') }}</button>
+                </div>
+            </div>
+            <h3>{{ g.translate('Weekly Progress') }}</h3>
+            <canvas id="progressChart" width="600" height="300"></canvas>
+            <p style="margin-top:12px; color:#666; font-size:0.95rem;">
+                {{ g.translate('Tip: Click "Mark Completed" after you complete a recommended meal/exercise — it adds points and updates the badge.') }}
+            </p>
+        </section>
+        <section id="home-image" class="tab-content">
+            <img src="{{ url_for('static', filename='images/landing.jpg') }}" alt="{{ g.translate('Healthy Lifestyle') }}"
+                style="width: 100%; max-width: 500px; height: auto; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); margin: auto;">
+        </section>
+
+    </main>
+
+    <div class="overlay" id="overlay" onclick="closePopup()"></div>
+    
+    <div class="popup" id="loginPopup" tabindex="0">
+        <h3>{{ g.translate('Login') }}</h3>
+        <input type="email" id="loginEmail" placeholder="{{ g.translate('Email') }}" required>
+        <input type="password" id="loginPassword" placeholder="{{ g.translate('Password') }}" required>
+        <button onclick="handleUserLogin()">{{ g.translate('Login') }}</button>
+    </div>
+    
+    <div class="popup" id="signupPopup" tabindex="0">
+        <h3>{{ g.translate('Sign Up') }}</h3>
+        <input type="text" placeholder="{{ g.translate('Full Name') }}" required>
+        <input type="email" placeholder="{{ g.translate('Email') }}" required>
+        <input type="password" placeholder="{{ g.translate('Password') }}" required>
+        <button onclick="closePopup()">{{ g.translate('Sign Up') }}</button>
+    </div>
+    
+    <div class="popup" id="translatePopup" tabindex="0">
+        <div class="translation-popup-content">
+            <h3>{{ g.translate('Select Language') }}</h3>
+            <div class="language-options-popup">
+                {% for code, name in g.LANGUAGES.items() %}
+                <button 
+                    onclick="setLanguage('{{ code }}')" 
+                    class="lang-btn-popup {% if g.lang_code == code %}active{% endif %}"
+                    title="{{ name }}">
+                    {{ name }}
+                </button>
+                {% endfor %}
+            </div>
+            <p style="margin-top: 10px; font-size: 0.8em; color: #555;">{{ g.translate('Note: This translation uses the direct lookup method.') }}</p>
+        </div>
+    </div>
+
+    <div class="popup" id="recipePopup" tabindex="0">
+        <button class="close-popup-btn" onclick="closePopup()">×</button>
+        <h3>{{ g.translate('Recipe Details') }}</h3>
+        <div id="recipeOutput">
+            </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 {{ g.translate('SmartDiet+') }}. {{ g.translate('All rights reserved.') }} | {{ g.translate('Privacy and Security Ensured') }}</p>
+    </footer>
+
+    <script>
+        function setLanguage(langCode) {
+            var url = "{{ url_for('set_language', lang_code='000') }}";
+            window.location.href = url.replace('000', langCode);
+        }
+    </script>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
+    <script>
+        // --- Content Switching Logic (You need this for the tabs to work) ---
+        function showContent(tabId) {
+            document.querySelectorAll('main section').forEach(section => {
+                section.style.display = 'none';
+            });
+            const target = document.getElementById(tabId);
+            if (target) {
+                target.style.display = 'block';
+            }
+        }
+        
+        // --- Popup Logic (Updated to handle recipePopup) ---
+        function openPopup(popupId) {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById(popupId).style.display = 'block';
+        }
+        function closePopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('loginPopup').style.display = 'none';
+            document.getElementById('signupPopup').style.display = 'none';
+            document.getElementById('translatePopup').style.display = 'none';
+            // Also close the new recipe popup
+            const recipePopup = document.getElementById('recipePopup');
+            if (recipePopup) recipePopup.style.display = 'none';
+        }
+        
+        // Initialize default section on page load
+        window.addEventListener("load", function() {
+            // FIX: We now explicitly tell JS to show the Profile section.
+            // This is safer than relying on CSS or 'home' being the default.
+            if (!window.location.hash) {
+                showContent('home-section'); 
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+{
+    "demo_user_id": {
+        "2025-03-21": [
+            {
+                "id": "0bf4aef3-c25b-43df-8409-9e261b8cb528",
+                "food_item": "appl",
+                "calories": 33.0,
+                "protein": 450.0,
+                "carbs": 660.0,
+                "fat": 770.0,
+                "meal_type": "Breakfast",
+                "timestamp": "00:49:42"
+            }
+        ],
+        "2025-06-04": [],
+        "2025-06-06": [
+            {
+                "id": "f2f46a04-d691-477f-b371-a9ca48b15669",
+                "food_item": "fgjgj",
+                "calories": 555.0,
+                "protein": 77.0,
+                "carbs": 40.0,
+                "fat": 40.0,
+                "meal_type": "Breakfast",
+                "timestamp": "01:08:58"
+            }
+        ],
+        "2025-07-09": [
+            {
+                "id": "20ea9f72-43f0-4e32-838b-364a9ff81789",
+                "food_item": "appl",
+                "calories": 44.0,
+                "protein": 550.0,
+                "carbs": 660.0,
+                "fat": 770.0,
+                "meal_type": "Breakfast",
+                "timestamp": "01:39:01"
+            }
+        ],
+        "2025-08-04": [],
+        "2025-06-08": [
+            {
+                "id": "d23c1d2c-b67c-4377-9a5d-b88ae3a859d7",
+                "food_item": "apple",
+                "calories": 444.0,
+                "protein": 70.0,
+                "carbs": 80.0,
+                "fat": 90.0,
+                "meal_type": "Breakfast",
+                "timestamp": "20:09:17"
+            }
+        ],
+        "2025-06-05": [
+            {
+                "id": "80c28ae1-bda8-441c-94f9-3ded48b3abbe",
+                "food_item": "apple",
+                "calories": 456.0,
+                "protein": 90.0,
+                "carbs": 52.0,
+                "fat": 82.0,
+                "meal_type": "Breakfast",
+                "timestamp": "20:19:57"
+            },
+            {
+                "id": "676c7a99-6676-4238-a055-f202d51d257c",
+                "food_item": "chips",
+                "calories": 536.0,
+                "protein": 7.0,
+                "carbs": 50.0,
+                "fat": 35.0,
+                "meal_type": "Snack",
+                "timestamp": "09:42:16"
+            }
+        ],
+        "2025-08-07": [
+            {
+                "id": "4d5862f6-3fb9-4851-9220-baafd0da5b32",
+                "food_item": "chicken",
+                "calories": 300.0,
+                "protein": 500.0,
+                "carbs": 699.0,
+                "fat": 500.0,
+                "meal_type": "Lunch",
+                "timestamp": "20:26:45"
+            }
+        ],
+        "2025-06-09": [
+            {
+                "id": "4963bcb9-8c77-4eb8-8dde-b7197ebcec4e",
+                "food_item": "milk",
+                "calories": 44.0,
+                "protein": 660.0,
+                "carbs": 80.0,
+                "fat": 50.0,
+                "meal_type": "Breakfast",
+                "timestamp": "19:12:54"
+            }
+        ],
+        "2025-07-19": [
+            {
+                "id": "879bcaaa-2c2f-4fb7-b9de-f429c7ca5a72",
+                "food_item": "meat",
+                "calories": 88.0,
+                "protein": 8.0,
+                "carbs": 9.0,
+                "fat": 8.0,
+                "meal_type": "Breakfast",
+                "timestamp": "20:32:07"
+            }
+        ],
+        "2025-06-10": [
+            {
+                "id": "40def2d6-b363-43d6-9c85-3dda3a72f53a",
+                "food_item": "apple",
+                "calories": 44.0,
+                "protein": 60.0,
+                "carbs": 80.0,
+                "fat": 90.0,
+                "meal_type": "Breakfast",
+                "timestamp": "19:13:20"
+            }
+        ],
+        "2025-09-18": [
+            {
+                "id": "097b64d5-0075-40b7-9ea7-089c93e1d97a",
+                "food_item": "ggg",
+                "calories": 33.0,
+                "protein": 0.0,
+                "carbs": 40.0,
+                "fat": 40.0,
+                "meal_type": "Breakfast",
+                "timestamp": "23:45:58"
+            }
+        ]
+    }
+}
